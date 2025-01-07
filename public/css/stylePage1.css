@@ -434,39 +434,28 @@ canvas {
 /* 여기서부터 Page2 Map to Text 기능*/
 
 .popup-overlay {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  right: -100%; /* 초기에는 화면 밖에 위치 */
+  width: 400px; /* 팝업 너비 */
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: right 0.5s ease-in-out; /* 슬라이딩 효과 */
   z-index: 1000;
 }
 
-/* .popup-content {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border-radius: 8px;
-  max-width: 90%;
-  max-height: 90%;
-  overflow-y: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 20px;
-  gap: 20px;
-  text-align: center;
-} */
+.popup-overlay.active {
+  right: 0; /* 화면 안으로 슬라이딩 */
+}
 
 /* 🌟 팝업 컨텐츠 */
 .popup-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
   padding: 20px;
-  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 /* 🌟 팝업 오버레이 */
@@ -481,7 +470,7 @@ canvas {
   z-index: 10002;
   overflow-y: auto;
   transition: right 0.4s ease-in-out; /* 부드러운 슬라이딩 효과 */
-  display: none; /* 초기 상태에서 완전히 숨김 */
+  /* display: none; */
   flex-direction: column;
 }
 
@@ -530,12 +519,10 @@ canvas {
   overflow-y: auto;
 }
 
-/* ✅ 버튼 영역 */
 .popup-buttons {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
+  justify-content: space-between;
+  margin-top: auto;
 }
 
 /* ✅ 아이콘 버튼 공통 스타일 */
@@ -589,11 +576,13 @@ canvas {
 /* ✅ 이미지 컨테이너 */
 #scenario-images-container {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
   gap: 10px;
   margin-bottom: 15px;
   overflow-x: auto;
+  overflow-y: auto; /* 세로 스크롤 가능 */
 }
 
 .scenario-image-block {
@@ -601,8 +590,6 @@ canvas {
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  flex: 1;
-  text-align: center;
 }
 
 .scenario-image-block img {
@@ -620,17 +607,13 @@ canvas {
   color: #555;
 }
 
-#scenario-description {
-  margin-top: auto;
-  padding: 10px;
-  border-top: 1px solid #ccc;
-}
-
-#scenario-description p {
-  font-size: 14px;
-  color: #444;
+#scenario-text-1,
+#scenario-text-2,
+#scenario-text-3 {
+  font-size: 0.9em;
+  color: #555;
   text-align: center;
-  white-space: pre-wrap;
+  margin-top: 5px;
 }
 
 /* 🌟 플로팅 버튼 컨테이너 (하단 중앙 정렬) */

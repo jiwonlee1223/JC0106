@@ -12,7 +12,7 @@ const server = http.createServer(app);
 const io = new SocketIOServer(server);
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: OPENAI_API_KEY
 });
 
 // 서버 포트
