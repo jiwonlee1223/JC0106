@@ -191,95 +191,95 @@ function handleContextMenu(event) {
 }
 
 function addNewRow(isSubArtifact = false, description = "", parentId = null) {
-    const rowContainer = document.createElement("div");
-    rowContainer.className = "artifact-row";
+  const rowContainer = document.createElement("div");
+  rowContainer.className = "artifact-row";
 
-    let currentId;
-    if (isSubArtifact && parentId) {
-        if (!subArtifactCounters[parentId]) {
-            subArtifactCounters[parentId] = 0;
-        }
-        const alphabet = String.fromCharCode(97 + subArtifactCounters[parentId]);
-        currentId = `${parentId}${alphabet}`;
-        subArtifactCounters[parentId]++;
+  let currentId;
+  if (isSubArtifact && parentId) {
+    if (!subArtifactCounters[parentId]) {
+      subArtifactCounters[parentId] = 0;
+    }
+    const alphabet = String.fromCharCode(97 + subArtifactCounters[parentId]);
+    currentId = `${parentId}${alphabet}`;
+    subArtifactCounters[parentId]++;
+  } else {
+    currentId = `${rowIdCounter}`;
+    subArtifactCounters[currentId] = 0;
+    rowIdCounter++;
+  }
+
+  rowContainer.id = `artifact-row-${currentId}`;
+  rowContainer.style.zIndex = zIndexCounter;
+  zIndexCounter--;
+
+  const artifactBox = document.createElement("div");
+  artifactBox.className = isSubArtifact ? "sub-artifact" : "main-artifact";
+  artifactBox.textContent = description || (isSubArtifact ? `New Sub Artifact (${currentId})` : `New Main Artifact (${currentId})`);
+
+  artifactBox.style.backgroundColor = isSubArtifact ? "#2e2e2e" : "#2b2b2b";
+  artifactBox.style.color = "#f1f1f1";
+  artifactBox.style.border = "1px solid #555";
+  artifactBox.style.borderRadius = "8px";
+  artifactBox.style.padding = "12px";
+  artifactBox.style.marginRight = "5px";
+  artifactBox.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.3)";
+
+  if (isSubArtifact) {
+    artifactBox.style.marginLeft = "20px";
+    artifactBox.style.borderLeft = "2px solid #888";
+    artifactBox.style.fontSize = "14px";
+  }
+
+  rowContainer.appendChild(artifactBox);
+  addDoubleClickToEdit(artifactBox);
+
+  const addButton = document.createElement("button");
+  addButton.className = "add-row-button";
+  addButton.textContent = "+";
+
+  addButton.style.marginLeft = "5px";
+  addButton.style.width = "40px";
+  addButton.style.height = "40px";
+  addButton.style.padding = "10px";
+  addButton.style.backgroundColor = "#464646";
+  addButton.style.color = "white";
+  addButton.style.border = "none";
+  addButton.style.borderRadius = "4px";
+  addButton.style.cursor = "pointer";
+
+  addButton.addEventListener("click", (event) => {
+    event.stopImmediatePropagation();
+    addNewRow(false, "", currentId);
+  });
+
+  addButton.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    showPlusButtonContextMenu(event.clientX, event.clientY, addButton, currentId);
+  });
+
+  rowContainer.appendChild(addButton);
+
+  if (parentId) {
+    const parentRow = document.getElementById(`artifact-row-${parentId}`);
+    if (parentRow) {
+      parentRow.insertAdjacentElement("afterend", rowContainer);
     } else {
-        currentId = `${rowIdCounter}`;
-        subArtifactCounters[currentId] = 0;
-        rowIdCounter++;
+      document
+        .getElementById("artifact-container")
+        .insertBefore(rowContainer, document.getElementById("row-control-container"));
     }
+  } else {
+    document
+      .getElementById("artifact-container")
+      .insertBefore(rowContainer, document.getElementById("row-control-container"));
+  }
 
-    rowContainer.id = `artifact-row-${currentId}`;
-    rowContainer.style.zIndex = zIndexCounter;
-    zIndexCounter--;
+  console.log(`✅ Created ${isSubArtifact ? "Sub Artifact" : "Main Artifact"} (ID: ${currentId}): ${description || ""}`);
 
-    const artifactBox = document.createElement("div");
-    artifactBox.className = isSubArtifact ? "sub-artifact" : "main-artifact";
-    artifactBox.textContent = description || (isSubArtifact ? `New Sub Artifact (${currentId})` : `New Main Artifact (${currentId})`);
-
-    artifactBox.style.backgroundColor = isSubArtifact ? "#2e2e2e" : "#2b2b2b";
-    artifactBox.style.color = "#f1f1f1";
-    artifactBox.style.border = "1px solid #555";
-    artifactBox.style.borderRadius = "8px";
-    artifactBox.style.padding = "12px";
-    artifactBox.style.marginRight = "5px";
-    artifactBox.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.3)";
-
-    if (isSubArtifact) {
-        artifactBox.style.marginLeft = "20px";
-        artifactBox.style.borderLeft = "2px solid #888";
-        artifactBox.style.fontSize = "14px";
-    }
-
-    rowContainer.appendChild(artifactBox);
-    addDoubleClickToEdit(artifactBox);
-
-    const addButton = document.createElement("button");
-    addButton.className = "add-row-button";
-    addButton.textContent = "+";
-
-    addButton.style.marginLeft = "5px";
-    addButton.style.width = "40px";
-    addButton.style.height = "40px";
-    addButton.style.padding = "10px";
-    addButton.style.backgroundColor = "#464646";
-    addButton.style.color = "white";
-    addButton.style.border = "none";
-    addButton.style.borderRadius = "4px";
-    addButton.style.cursor = "pointer";
-
-    addButton.addEventListener("click", (event) => {
-        event.stopImmediatePropagation();
-        addNewRow(false, "", currentId);
-    });
-
-    addButton.addEventListener("contextmenu", (event) => {
-        event.preventDefault();
-        showPlusButtonContextMenu(event.clientX, event.clientY, addButton, currentId);
-    });
-
-    rowContainer.appendChild(addButton);
-
-    if (parentId) {
-        const parentRow = document.getElementById(`artifact-row-${parentId}`);
-        if (parentRow) {
-            parentRow.insertAdjacentElement("afterend", rowContainer);
-        } else {
-            document
-                .getElementById("artifact-container")
-                .insertBefore(rowContainer, document.getElementById("row-control-container"));
-        }
-    } else {
-        document
-            .getElementById("artifact-container")
-            .insertBefore(rowContainer, document.getElementById("row-control-container"));
-    }
-
-    console.log(`✅ Created ${isSubArtifact ? "Sub Artifact" : "Main Artifact"} (ID: ${currentId}): ${description || ""}`);
-
-    rows++;
-    resizeCanvas(columns * cellSize, rows * cellSize);
-    const artifactContainer = document.getElementById("artifact-container");
-    artifactContainer.style.height = `${rows * cellSize}px`;
+  rows++;
+  resizeCanvas(columns * cellSize, rows * cellSize);
+  const artifactContainer = document.getElementById("artifact-container");
+  artifactContainer.style.height = `${rows * cellSize}px`;
 }
 
 // + 버튼 우클릭 메뉴 표시 함수
@@ -828,92 +828,92 @@ document.addEventListener("DOMContentLoaded", function () {
   openAIPhase1.init();
 
   /** ✅ openAIPhase2 모듈 */
-const openAIPhase2 = {
-  /** 🔄 Phase2: OpenAI API 호출 (secondPrompting) */
-  ask() {
-    console.log("🚀 [Phase2] Sending secondPrompting to server...");
-    socket.emit("secondPrompting");
-    showLoadingSpinner("맵 생성 중 ...");
-  },
+  const openAIPhase2 = {
+    /** 🔄 Phase2: OpenAI API 호출 (secondPrompting) */
+    ask() {
+      console.log("🚀 [Phase2] Sending secondPrompting to server...");
+      socket.emit("secondPrompting");
+      showLoadingSpinner("맵 생성 중 ...");
+    },
 
-  /** 🛠️ Phase2: 최종 OpenAI 응답 처리 */
-  parseArtifactsAndAddRows(response) {
-    try {
-      console.log("🛠️ [Phase2] Parsing artifacts and adding rows:", response);
+    /** 🛠️ Phase2: 최종 OpenAI 응답 처리 */
+    parseArtifactsAndAddRows(response) {
+      try {
+        console.log("🛠️ [Phase2] Parsing artifacts and adding rows:", response);
 
-      const data = JSON.parse(response); // JSON 파싱
+        const data = JSON.parse(response); // JSON 파싱
 
-      // ✅ Main/Sub Artifact 추가
-      if (data.artifacts && Array.isArray(data.artifacts)) {
-        data.artifacts.forEach((artifact) => {
-          if (artifact.mainArtifact) {
-            addNewRow(false, artifact.mainArtifact); // Main Artifact 추가
+        // ✅ Main/Sub Artifact 추가
+        if (data.artifacts && Array.isArray(data.artifacts)) {
+          data.artifacts.forEach((artifact) => {
+            if (artifact.mainArtifact) {
+              addNewRow(false, artifact.mainArtifact); // Main Artifact 추가
 
-            if (artifact.subArtifacts && Array.isArray(artifact.subArtifacts)) {
-              artifact.subArtifacts.forEach((subArtifact) => {
-                addNewRow(true, subArtifact); // Sub Artifact 추가
-              });
+              if (artifact.subArtifacts && Array.isArray(artifact.subArtifacts)) {
+                artifact.subArtifacts.forEach((subArtifact) => {
+                  addNewRow(true, subArtifact); // Sub Artifact 추가
+                });
+              }
             }
-          }
-        });
+          });
+        }
+
+        // ✅ 사용자 노드 추가
+        if (data.users && Array.isArray(data.users)) {
+          data.users.forEach((user, index) => {
+            const userColor = getNextNeonColor();
+            const userId = index + 1;
+
+            const fixedX = cellSize / 2;
+            const fixedY = (userId - 1) * cellSize + cellSize / 2;
+
+            const newNode = createNodeWithInteractionBand(
+              fixedX,
+              fixedY,
+              userColor,
+              "",
+              userId,
+              1,
+              true
+            );
+            nodes.push(newNode);
+            socket.emit("new node", newNode);
+
+            createUserDescr(userColor, userId, user);
+          });
+        }
+
+        console.log("✅ [Phase2] Artifacts and Users parsed successfully!");
+      } catch (error) {
+        console.error("❌ [Phase2] Failed to parse JSON response:", error);
       }
+    },
 
-      // ✅ 사용자 노드 추가
-      if (data.users && Array.isArray(data.users)) {
-        data.users.forEach((user, index) => {
-          const userColor = getNextNeonColor();
-          const userId = index + 1;
-
-          const fixedX = cellSize / 2;
-          const fixedY = (userId - 1) * cellSize + cellSize / 2;
-
-          const newNode = createNodeWithInteractionBand(
-            fixedX,
-            fixedY,
-            userColor,
-            "",
-            userId,
-            1,
-            true
-          );
-          nodes.push(newNode);
-          socket.emit("new node", newNode);
-
-          createUserDescr(userColor, userId, user);
-        });
-      }
-
-      console.log("✅ [Phase2] Artifacts and Users parsed successfully!");
-    } catch (error) {
-      console.error("❌ [Phase2] Failed to parse JSON response:", error);
+    /** 🔄 Phase2: 최종 OpenAI 응답 리스너 */
+    init() {
+      socket.on("final openai response", (data) => {
+        if (data.response) {
+          console.log("✅ [Phase2] Final OpenAI API response:", data.response);
+          this.parseArtifactsAndAddRows(data.response);
+          hideLoadingSpinner();
+        } else if (data.error) {
+          console.error("❌ [Phase2] Frontend error during second prompt:", data.error);
+          hideLoadingSpinner();
+        }
+      });
     }
-  },
+  };
 
-  /** 🔄 Phase2: 최종 OpenAI 응답 리스너 */
-  init() {
-    socket.on("final openai response", (data) => {
-      if (data.response) {
-        console.log("✅ [Phase2] Final OpenAI API response:", data.response);
-        this.parseArtifactsAndAddRows(data.response);
-        hideLoadingSpinner();
-      } else if (data.error) {
-        console.error("❌ [Phase2] Frontend error during second prompt:", data.error);
-        hideLoadingSpinner();
-      }
+  /** ✅ Phase2 이벤트 리스너 */
+  document
+    .getElementById("promptMapInput-close")
+    .addEventListener("click", function () {
+      console.log("🚀 [Phase2] Starting Phase2 process...");
+      openAIPhase2.ask();
     });
-  }
-};
 
-/** ✅ Phase2 이벤트 리스너 */
-document
-  .getElementById("promptMapInput-close")
-  .addEventListener("click", function () {
-    console.log("🚀 [Phase2] Starting Phase2 process...");
-    openAIPhase2.ask();
-  });
-
-/** ✅ Phase2 초기화 */
-openAIPhase2.init();
+  /** ✅ Phase2 초기화 */
+  openAIPhase2.init();
 
 
   // 화살표 버튼 클릭 이벤트 처리
@@ -1011,7 +1011,6 @@ openAIPhase2.init();
     }
   }
 
-
   // function addDoubleClickEditFeature(element) {
   //   element.addEventListener("dblclick", function () {
   //     const input = document.createElement("input");
@@ -1075,6 +1074,51 @@ openAIPhase2.init();
 
   // x-axis 섹션 나누기 로직
 
+  /** ✅ Scenario 팝업 관리 */
+  const scenarioPopup = {
+    /** 🛠️ 팝업 열기 */
+    show(response) {
+      const popup = document.getElementById('scenario-popup');
+      const scenarioText = document.getElementById('scenario-text');
+      const closeButton = document.getElementById('close-popup-button');
+      const copyButton = document.getElementById('copy-popup-button');
+
+      if (!popup || !scenarioText || !closeButton || !copyButton) {
+        console.error('❌ [Scenario Popup] Elements not found.');
+        return;
+      }
+
+      scenarioText.innerText = response;
+      console.log('✅ [Scenario Popup] Response added to scenario-text:', response);
+
+      popup.classList.add('active');
+      console.log('🚀 [Scenario Popup] Popup opened (slide-in from right).');
+
+      closeButton.onclick = () => {
+        popup.classList.remove('active');
+        console.log('🚪 [Scenario Popup] Popup closed (slide-out to right).');
+      };
+
+      copyButton.onclick = () => {
+        navigator.clipboard.writeText(response)
+          .then(() => {
+            console.log('✅ [Scenario Popup] Text copied to clipboard.');
+            alert('✅ Text has been copied!');
+          })
+          .catch(err => {
+            console.error('❌ [Scenario Popup] Error copying text:', err);
+          });
+      };
+    },
+
+    /** 🛠️ 팝업 숨기기 */
+    hide() {
+      const popup = document.getElementById('scenario-popup');
+      popup.classList.remove('active');
+      console.log('🚪 [Scenario Popup] Popup manually hidden.');
+    }
+  };
+
   const openAIPhase3 = {
     /** 🔄 Phase3: OpenAI API 호출 */
     ask(prompt) {
@@ -1117,35 +1161,37 @@ openAIPhase2.init();
     addScenarioToPopup(response) {
       const popup = document.getElementById('scenario-popup');
       const scenarioText = document.getElementById('scenario-text');
-      const scenarioImage = document.getElementById('scenario-image-display');
       const closeButton = document.getElementById('close-popup-button');
       const copyButton = document.getElementById('copy-popup-button');
 
       if (!popup || !scenarioText || !closeButton || !copyButton) {
-        console.error('❌ Popup elements not found. Check your HTML structure.');
+        console.error('❌ [Popup] Popup elements not found. Check your HTML structure.');
         return;
       }
 
       // ✅ 텍스트 영역에 응답 추가
       scenarioText.innerText = response;
+      console.log('✅ [Popup] Response added to scenario-text:', response);
 
-      // ✅ 팝업 표시
-      popup.style.display = 'flex';
+      // ✅ 팝업 표시 (슬라이드 인)
+      popup.classList.add('active');
+      console.log('🚀 [Popup] Popup opened with sliding animation');
 
-      // ✅ 팝업 닫기 버튼 이벤트 리스너 (중복 방지)
+      // ✅ 닫기 버튼 이벤트 리스너
       closeButton.onclick = () => {
-        popup.style.display = 'none';
+        popup.classList.remove('active'); // 슬라이드 아웃
+        console.log('🚪 [Popup] Popup closed with sliding animation');
       };
 
-      // ✅ 복사 버튼 이벤트 리스너 (중복 방지)
+      // ✅ 복사 버튼 이벤트 리스너
       copyButton.onclick = () => {
         navigator.clipboard.writeText(response)
           .then(() => {
-            console.log('✅ 텍스트가 클립보드에 복사되었습니다.');
-            alert('✅ 텍스트가 복사되었습니다.');
+            console.log('✅ [Popup] Text copied to clipboard.');
+            alert('✅ Text has been copied!');
           })
           .catch(err => {
-            console.error('❌ 복사 중 오류 발생:', err);
+            console.error('❌ [Popup] Error copying text:', err);
           });
       };
 
