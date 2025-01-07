@@ -1,0 +1,609 @@
+body {
+  background-color: #1e1e1e;
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica", sans-serif;
+}
+
+#main-container {
+  display: flex;
+  height: 100vh;
+  /* 창 크기에 맞춰 높이를 설정 */
+}
+
+#artifact-container {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-color: #1e1e1e;
+  box-sizing: border-box;
+  position: relative;
+  height: 50px;
+  /*transition: height 0.1s ease;*/
+  z-index: 10;
+  /* 오른쪽, 왼쪽 마진 추가 */
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#main-upper-container {
+  display: flex;
+  width: 100%;
+  height: 10vh;
+}
+
+#title-container {
+  width: 436px;
+  background-color: #2e2e2e;
+  margin: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  padding: 0;
+}
+/* 스크롤 가능하도록 설정 */
+#x-axis-container {
+  display: flex;
+  overflow-x: auto;
+  background-color: #1e1e1e;
+  padding: 10px;
+  z-index: 1000;
+  position: sticky;
+  top: 0;
+}
+
+.time-dividing-section {
+  flex: 1;
+  padding: 10px;
+  min-width: 30px;
+  /* 섹션의 최소 너비 */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.resize-handle {
+  width: 3px;
+  cursor: col-resize;
+  background-color: #888;
+  right: -1.5px;
+  /* 부모 요소 경계에 걸치게 위치 설정 */
+}
+
+.artifact-resize-handle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  /* 핸들이 박스 전체 너비를 차지하도록 설정 */
+  height: 5px;
+  /* 세로 핸들의 높이 설정 */
+  cursor: ns-resize;
+  /* 세로 조정용 커서 */
+  background-color: #888;
+}
+
+.time-axis-textbox {
+  width: 20%;
+  padding: 8px 12px;
+  /* 상하좌우 여백 */
+  font-size: 16px;
+  border: 1px solid #f1f1f1;
+  /* 얇은 테두리 */
+  border-radius: 8px;
+  /* 둥근 모서리 */
+  background-color: #2c2c2c;
+  /* 미묘한 어두운 배경 */
+  color: #ffffff;
+  /* 텍스트 색상 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  /* 가벼운 그림자 */
+  outline: none;
+  /* 클릭 시 파란 테두리 제거 */
+  transition: background-color 0.3s, box-shadow 0.3s;
+  /* 애니메이션 효과 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.time-axis-textbox:focus {
+  background-color: #3b3b3b;
+  /* 포커스 시 더 어두운 배경 */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  /* 포커스 시 더 강한 그림자 */
+  border-color: #666;
+  /* 포커스 시 테두리 색상 변경 */
+}
+
+#app-title-input {
+  width: 100%;
+  /* 부모 요소에 맞춤 */
+  height: 100%;
+  /* 부모 요소에 맞춤 */
+  box-sizing: border-box;
+  /* 패딩 포함한 크기 계산 */
+  padding: 20px;
+  font-size: 25px;
+  border: none;
+  background-color: #1e1e1e;
+  color: #fff;
+  outline: none;
+  font-family: "Helvetica", sans-serif;
+  font-style: italic;
+  transition: background-color 0.3s;
+}
+
+#app-title-input:focus {
+  background-color: #5e5e5e;
+}
+
+#row-control-container {
+  display: flex;
+  margin-bottom: 5px;
+  height: 45px;
+  /* cellSize와 동일하게 설정 */
+}
+
+#add-row-button {
+  width: 40px;
+  padding: 10px;
+  background-color: #464646;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.blank-add-row-button {
+  flex: 0 0 40px;
+}
+
+.artifact-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  height: 45px;
+  /* cellSize와 동일하게 설정 */
+}
+
+/* Main Artifact 스타일 통합 */
+#main-artifact {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #2b2b2b;
+  color: #f1f1f1;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  margin-right: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  font-family: "Helvetica", sans-serif;
+}
+
+#main-artifact:focus {
+  background-color: #3e3e3e;
+  border-color: #39ff14;
+  outline: none;
+  box-shadow: 0px 6px 12px rgba(57, 255, 20, 0.3);
+}
+
+.sub-artifact {
+  padding: 8px 12px;
+  margin-top: 0px;
+  margin-left: 20px;
+  font-size: 14px;
+  border-left: 2px solid #888;
+  border-radius: 4px;
+  background-color: #2e2e2e;
+  color: #ccc;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.sub-artifact:focus {
+  background-color: #3e3e3e;
+  box-shadow: 0px 6px 12px rgba(57, 255, 20, 0.3);
+  outline: none;
+}
+
+#canvas-container {
+  flex: 8;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+canvas {
+  display: block;
+  width: auto;
+  height: auto;
+  border: 1px solid #ffffff;
+}
+
+/* promptTextInput 스타일 */
+#promptTextInput {
+  position: fixed;
+  left: 50%;
+  bottom: -100%;
+  width: 70%;
+  height: 40%;
+  background-color: #464646;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0px -4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  transform: translateX(-50%);
+  display: none;
+  transition: bottom 0.5s ease-in-out;
+  box-sizing: border-box;
+}
+
+#text-box-container {
+  display: flex;
+  gap: 10px;
+  /* 텍스트박스 사이 간격 */
+  width: 100%;
+  height: 70%;
+  /* 텍스트박스들이 차지할 높이 */
+}
+
+#promptTextInput-field-btn {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#promptTextInput-field,
+#response-box {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #ffffff;
+  color: #000000;
+  resize: none;
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* promptTextInput-field의 스타일 */
+#promptTextInput-field {
+  background-color: #1e1e1e;
+  color: #f1f1f1;
+  flex: 1;
+  /* 텍스트박스가 남은 공간을 차지하도록 설정 */
+}
+
+/* response-box는 읽기 전용 */
+#response-box {
+  background-color: #f1f1f1;
+  color: #333;
+  flex: 1;
+}
+
+/* SEND 버튼을 promptTextInput-field 위에 우측 하단에 위치 */
+#promptTextInput-close {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background-color: #1e1e1e;
+  color: white;
+  border: none;
+  font-size: 20px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 10001;
+}
+
+#promptTextInput-close i {
+  font-size: 24px;
+  color: white;
+  transition: color 0.3s ease;
+  /* 아이콘 색상 전환 */
+}
+
+/* 마우스오버 시 아이콘을 네온 그린 컬러로 변경 */
+#promptTextInput-close:hover i {
+  color: #39ff14;
+  /* 네온 그린 */
+}
+
+/* 아이콘 스타일 */
+#toggle-arrow i {
+  font-size: 24px;
+  color: white;
+}
+
+/* 애니메이션 후 보일 때 */
+#promptTextInput.show {
+  bottom: 0;
+}
+
+/* 화살표 버튼 스타일 */
+#toggle-arrow {
+  position: absolute;
+  top: -30px;
+  left: 95%;
+  transform: translateX(-50%);
+  background-color: #464646;
+  color: white;
+  border: none;
+  font-size: 20px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 20%;
+  z-index: 10001;
+}
+
+#loading-spinner-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10001;
+}
+
+#loading-spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #39ff14;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#loading-message {
+  color: white;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.interaction-bend {
+  border: 1px solid #464646;
+  /* 테두리 색상 */
+  border-radius: 5px;
+  /* 둥근 모서리 */
+  padding: 5px 10px;
+  /* 내부 여백 */
+  font-size: 14px;
+  /* 폰트 크기 */
+  width: 150px;
+  /* 폭 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  /* 그림자 효과 */
+}
+
+
+/* 여기서부터 Page2 Map to Text 기능*/
+
+.popup-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 8px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  gap: 20px;
+  text-align: center;
+}
+
+/* 이미지 영역 */
+#scenario-popup-images {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+/* 이미지 및 텍스트 블록 */
+.scenario-images-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+  min-width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.scenario-images-block img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-bottom: 1px solid #ddd;
+}
+
+.scenario-images-block p {
+  padding: 10px;
+  font-size: 12px;
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-y: auto;
+}
+
+/* ✅ 버튼 영역 */
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ✅ 아이콘 버튼 공통 스타일 */
+.popup-icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+/* ✅ 아이콘 스타일 */
+.popup-icon-button i {
+  font-size: 24px;
+  color: #464646;
+  transition: color 0.3s ease;
+}
+
+/* ✅ 호버 효과 */
+.popup-icon-button:hover {
+  background-color: #2e2e2e;
+  transform: scale(1.1);
+}
+
+.popup-icon-button:hover i {
+  color: #39ff14;
+}
+
+/* ✅ 프로그레스 바 컨테이너 */
+#progress-container {
+  width: 100%;
+  background: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  height: 20px;
+}
+
+#progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(to right, #39ff14, #2e2e2e);
+  transition: width 0.5s ease-in-out;
+}
+
+/* ✅ 이미지 컨테이너 */
+#scenario-images-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 15px;
+  overflow-x: auto;
+}
+
+.scenario-image-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  text-align: center;
+}
+
+.scenario-image-block img {
+  width: 100%;
+  max-width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.scenario-image-block p {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+}
+
+#scenario-description {
+  margin-top: 15px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+#scenario-description p {
+  font-size: 14px;
+  color: #444;
+  text-align: center;
+  white-space: pre-wrap;
+}
+
+/* SEND 버튼 스타일 */
+.save-json-button {
+  all: unset; /* 기본 버튼 스타일 초기화 */
+  position: fixed; /* 화면에 고정 */
+  right: 20px; /* 우측 여백 */
+  bottom: 20px; /* 하단 여백 */
+  width: 60px;
+  height: 60px;
+  background-color: #464646;
+  color: #464646;
+  border-radius: 50%; /* 원형 버튼 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10001;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* 아이콘 스타일 */
+.save-json-button i {
+  font-size: 24px;
+  color: #f1f1f1;
+  transition: color 0.3s ease;
+}
+
+/* 호버 효과 */
+.save-json-button:hover {
+  background-color: #2e2e2e;
+  transform: scale(1.1); /* 버튼 확대 */
+}
+
+.save-json-button:hover i {
+  color: #39ff14; /* 네온 그린 */
+}
+
+/* SEND 버튼 포커스 효과 */
+.save-json-button:focus {
+  outline: none;
+  box-shadow: 0 0 10px #39ff14;
+}

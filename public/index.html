@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>IIJM+</title>
+  <link rel="stylesheet" href="/css/stylePage1.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<button id="save-json-button" class="save-json-button">
+  <i class="fas fa-paper-plane"></i>
+</button>
+
+<body>
+  
+  <div id="main-upper-container">
+    <div id="title-container">
+      <input id="app-title-input" type="text" placeholder="Enter the app title" />
+    </div>
+    <!-- x-axis-container는 스크롤 가능한 영역으로 설정 -->
+    <div id="x-axis-container">
+      <div class="time-dividing-section">
+        <input type="text" class="time-axis-textbox" placeholder="Before" />
+      </div>
+      <div class="resize-handle"></div>
+      <div class="time-dividing-section">
+        <input type="text" class="time-axis-textbox" placeholder="During 1" />
+      </div>
+      <div class="resize-handle"></div>
+      <div class="time-dividing-section">
+        <input type="text" class="time-axis-textbox" placeholder="During 2" />
+      </div>
+      <div class="resize-handle"></div>
+      <div class="time-dividing-section">
+        <input type="text" class="time-axis-textbox" placeholder="During 3" />
+      </div>
+      <div class="resize-handle"></div>
+      <div class="time-dividing-section">
+        <input type="text" class="time-axis-textbox" placeholder="After" />
+      </div>
+    </div>
+  </div>
+
+  <div id="main-container">
+    <div id="artifact-container">
+      <div id="row-control-container">
+        <input id="main-artifact" type="text" placeholder="Main Artifact" />
+        <button id="add-row-button">+</button>
+      </div>
+    </div>
+    <div id="canvas-container">
+      <!-- 캔버스는 p5.js에서 생성. -->
+    </div>
+  </div>
+
+  <div id="loading-spinner-container" style="display: none">
+    <div id="loading-spinner"></div>
+    <p id="loading-message">Processing... Please wait.</p>
+  </div>
+
+  <div id="promptTextInput">
+    <button id="toggle-arrow">
+      <i class="fas fa-chevron-down"></i>
+    </button>
+
+    <div id="text-box-container">
+      <div id="promptTextInput-field-btn">
+        <textarea type="text"
+          id="promptTextInput-field">유진은 친구 호정, 유경과 제주도 여행을 계획하며 렌트카 예약 플랫폼에서 SUV를 예약했다. 공항에 도착한 세 사람은 셔틀버스를 타고 렌트카 업체로 이동해 계약 절차를 마치고 차량을 인수했다. 유진은 차량 상태를 꼼꼼히 확인했고, 유경은 음악을 틀며 드라이브를 시작했다. 여행 중 유진은 네비게이션으로 길을 안내했고, 호정은 맛집과 카페를 추천하며 여정을 계획했다. 한 번의 GPS 오류로 긴장감이 돌았지만, 함께 문제를 해결하며 추억을 쌓았다.
+          여행 마지막 날 저녁, 세 사람은 렌트카를 반납하기 위해 업체로 돌아갔다. 반납 절차는 처음 차량을 인수할 때보다 더 간단했다. 직원은 차량 상태를 확인했고, 유진은 주유 상태와 잔여 금액까지 꼼꼼히 확인한 뒤 차량 반납을 마무리했다. 이후 셔틀버스를 타고 공항으로 돌아가는 길, 세 사람은 창밖으로 저무는 제주도의 노을을 바라보며 여행의 마지막을 아쉬워했다.</textarea>
+        <button id="promptTextInput-close">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+      <textarea id="response-box" readonly></textarea>
+    </div>
+  </div>
+
+  <div id="scenario-popup" class="popup-overlay" style="display: none;">
+    <div class="popup-content">
+
+      <div id="progress-container">
+        <div id="progress-bar"></div>
+      </div>
+
+      <div id="scenario-images-container">
+        <div class="scenario-image-block">
+          <img id="scenario-image-1" src="" alt="Generated Image 1">
+          <p>Step 1</p>
+        </div>
+        <div class="scenario-image-block">
+          <img id="scenario-image-2" src="" alt="Generated Image 2">
+          <p>Step 2</p>
+        </div>
+        <div class="scenario-image-block">
+          <img id="scenario-image-3" src="" alt="Generated Image 3">
+          <p>Step 3</p>
+        </div>
+      </div>
+
+      <div id="scenario-description">
+        <p id="scenario-text">Description Text will appear here.</p>
+      </div>
+
+      <div class="popup-buttons">
+        <button id="copy-popup-button" class="popup-icon-button">
+          <i class="fas fa-copy"></i>
+        </button>
+        <button id="close-popup-button" class="popup-icon-button">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/scriptPage1.js"></script>
+</body>
+
+</html>
