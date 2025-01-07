@@ -36,77 +36,42 @@
     {
       "id": "",
       "type": "Main Artifact",
-      "description": "렌트카 예약 플랫폼"
+      "description": "렌트카 서비스"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "맞춤형 차량 추천"
+      "description": "차량 상태 체크리스트"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "실시간 지원 채팅"
-    },
-    {
-      "id": "",
-      "type": "Main Artifact",
-      "description": "공항과 렌트카 업체 간의 셔틀 서비스"
+      "description": "계약 서류"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "셔틀 앱 알림 서비스"
+      "description": "맞춤형 여행 가이드"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "지역 관광 정보 제공"
-    },
-    {
-      "id": "",
-      "type": "Main Artifact",
-      "description": "렌트카 인수 과정"
+      "description": "네비게이션 시스템"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "QR 코드 기반의 신속한 인수 시스템"
+      "description": "반납 절차 시스템"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "디지털 차량 매뉴얼"
-    },
-    {
-      "id": "",
-      "type": "Main Artifact",
-      "description": "여행 중 편의 서비스"
+      "description": "포토 앨범 생성 서비스"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "지역 맛집 및 관광지 안내 앱"
-    },
-    {
-      "id": "",
-      "type": "Sub Artifact",
-      "description": "즉시 경로 교정 기능"
-    },
-    {
-      "id": "",
-      "type": "Main Artifact",
-      "description": "렌트카 반납 절차"
-    },
-    {
-      "id": "",
-      "type": "Sub Artifact",
-      "description": "자동 반납 시스템"
-    },
-    {
-      "id": "",
-      "type": "Sub Artifact",
-      "description": "모바일 반납 확인서"
+      "description": "기념 패키지"
     }
   ]
 }
