@@ -222,7 +222,6 @@ canvas {
   border: 1px solid #ffffff;
 }
 
-/* promptTextInput 스타일 */
 #promptTextInput {
   position: fixed;
   left: 50%;
@@ -285,34 +284,6 @@ canvas {
   background-color: #f1f1f1;
   color: #333;
   flex: 1;
-}
-
-/* SEND 버튼을 promptTextInput-field 위에 우측 하단에 위치 */
-#promptTextInput-close {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  background-color: #1e1e1e;
-  color: white;
-  border: none;
-  font-size: 20px;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 50%;
-  z-index: 10001;
-}
-
-#promptTextInput-close i {
-  font-size: 24px;
-  color: white;
-  transition: color 0.3s ease;
-  /* 아이콘 색상 전환 */
-}
-
-/* 마우스오버 시 아이콘을 네온 그린 컬러로 변경 */
-#promptTextInput-close:hover i {
-  color: #39ff14;
-  /* 네온 그린 */
 }
 
 /* 아이콘 스타일 */
@@ -565,45 +536,102 @@ canvas {
   white-space: pre-wrap;
 }
 
-/* SEND 버튼 스타일 */
-.save-json-button {
-  all: unset; /* 기본 버튼 스타일 초기화 */
+/* 🌟 플로팅 버튼 컨테이너 (하단 중앙 정렬) */
+.floating-button-container {
   position: fixed; /* 화면에 고정 */
-  right: 20px; /* 우측 여백 */
   bottom: 20px; /* 하단 여백 */
-  width: 60px;
-  height: 60px;
+  left: 50%; /* 수평 중앙 정렬 */
+  transform: translateX(-50%); /* 정확한 중앙 정렬 */
+  z-index: 10001; /* 다른 요소 위에 표시 */
+  display: flex; /* 가로 정렬 */
+  align-items: center; /* 수직 정렬 */
+  justify-content: center; /* 가운데 정렬 */
+  gap: 15px; /* 버튼 간격 */
+  padding: 5px 10px; /* 컨테이너 여백 */
+  background-color: #f1f1f1;
+  border-radius: 30px; /* 컨테이너를 타원형으로 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 🌟 개별 버튼 스타일 */
+.floating-button {
+  all: unset; /* 기본 버튼 스타일 초기화 */
+  width: 50px;
+  height: 50px;
   background-color: #464646;
-  color: #464646;
+  color: #f1f1f1;
   border-radius: 50%; /* 원형 버튼 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  z-index: 10001;
+  position: relative;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* 아이콘 스타일 */
-.save-json-button i {
-  font-size: 24px;
+/* 🌟 아이콘 스타일 */
+.floating-button i {
+  font-size: 20px;
   color: #f1f1f1;
   transition: color 0.3s ease;
 }
 
-/* 호버 효과 */
-.save-json-button:hover {
+/* 🌟 호버 효과 */
+.floating-button:hover {
   background-color: #2e2e2e;
   transform: scale(1.1); /* 버튼 확대 */
 }
 
-.save-json-button:hover i {
+.floating-button:hover i {
   color: #39ff14; /* 네온 그린 */
 }
 
-/* SEND 버튼 포커스 효과 */
-.save-json-button:focus {
+/* 🌟 버튼 포커스 효과 */
+.floating-button:focus {
   outline: none;
   box-shadow: 0 0 10px #39ff14;
+}
+
+/* 🌟 말풍선 스타일 */
+.floating-button::after {
+  content: attr(data-tooltip); /* data-tooltip 값 사용 */
+  position: absolute;
+  bottom: 60px; /* 버튼 위에 말풍선 표시 */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  opacity: 0; /* 기본적으로 숨김 */
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 10002;
+}
+
+/* 🌟 말풍선 화살표 추가 */
+.floating-button::before {
+  content: "";
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 10002;
+}
+
+/* 🌟 호버 시 말풍선 표시 */
+.floating-button:hover::after,
+.floating-button:hover::before {
+  opacity: 1;
+  visibility: visible;
 }

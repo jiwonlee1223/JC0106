@@ -8,12 +8,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 
-<button id="save-json-button" class="save-json-button">
-  <i class="fas fa-paper-plane"></i>
-</button>
+<!-- 🌟 플로팅 버튼 컨테이너 -->
+<div class="floating-button-container">
+  <button id="promptTextInput-close" class="floating-button" data-tooltip="Phase 1">
+    <i class="fas fa-paper-plane"></i>
+  </button>
+
+  <button id="promptMapInput-close" class="floating-button" data-tooltip="Phase 2">
+    <i class="fas fa-map"></i>
+  </button>
+  <button id="save-json-button" class="floating-button" data-tooltip="Phase 3">
+    <i class="fas fa-save"></i>
+  </button>
+</div>
 
 <body>
-  
+
   <div id="main-upper-container">
     <div id="title-container">
       <input id="app-title-input" type="text" placeholder="Enter the app title" />
@@ -69,9 +79,6 @@
         <textarea type="text"
           id="promptTextInput-field">유진은 친구 호정, 유경과 제주도 여행을 계획하며 렌트카 예약 플랫폼에서 SUV를 예약했다. 공항에 도착한 세 사람은 셔틀버스를 타고 렌트카 업체로 이동해 계약 절차를 마치고 차량을 인수했다. 유진은 차량 상태를 꼼꼼히 확인했고, 유경은 음악을 틀며 드라이브를 시작했다. 여행 중 유진은 네비게이션으로 길을 안내했고, 호정은 맛집과 카페를 추천하며 여정을 계획했다. 한 번의 GPS 오류로 긴장감이 돌았지만, 함께 문제를 해결하며 추억을 쌓았다.
           여행 마지막 날 저녁, 세 사람은 렌트카를 반납하기 위해 업체로 돌아갔다. 반납 절차는 처음 차량을 인수할 때보다 더 간단했다. 직원은 차량 상태를 확인했고, 유진은 주유 상태와 잔여 금액까지 꼼꼼히 확인한 뒤 차량 반납을 마무리했다. 이후 셔틀버스를 타고 공항으로 돌아가는 길, 세 사람은 창밖으로 저무는 제주도의 노을을 바라보며 여행의 마지막을 아쉬워했다.</textarea>
-        <button id="promptTextInput-close">
-          <i class="fas fa-paper-plane"></i>
-        </button>
       </div>
       <textarea id="response-box" readonly></textarea>
     </div>

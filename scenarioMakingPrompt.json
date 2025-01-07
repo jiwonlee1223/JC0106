@@ -36,42 +36,42 @@
     {
       "id": "",
       "type": "Main Artifact",
-      "description": "렌트카 서비스"
+      "description": "렌트카 업체의 디지털 시스템"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "차량 상태 체크리스트"
+      "description": "디지털 문서화 및 서명"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "계약 서류"
+      "description": "개인화된 추천 시스템"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "맞춤형 여행 가이드"
+      "description": "실시간 차량 상태 및 내비게이션 앱"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "네비게이션 시스템"
+      "description": "긴급 상황 지원 서비스"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "반납 절차 시스템"
+      "description": "차량 내 멀티미디어 가이드"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "포토 앨범 생성 서비스"
+      "description": "원터치 차량 반납"
     },
     {
       "id": "",
       "type": "Sub Artifact",
-      "description": "기념 패키지"
+      "description": "여행 후 리뷰 및 리워드 프로그램"
     }
   ]
 }
