@@ -1074,51 +1074,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // x-axis 섹션 나누기 로직
 
-  /** ✅ Scenario 팝업 관리 */
-  const scenarioPopup = {
-    /** 🛠️ 팝업 열기 */
-    show(response) {
-      const popup = document.getElementById('scenario-popup');
-      const scenarioText = document.getElementById('scenario-text');
-      const closeButton = document.getElementById('close-popup-button');
-      const copyButton = document.getElementById('copy-popup-button');
-
-      if (!popup || !scenarioText || !closeButton || !copyButton) {
-        console.error('❌ [Scenario Popup] Elements not found.');
-        return;
-      }
-
-      scenarioText.innerText = response;
-      console.log('✅ [Scenario Popup] Response added to scenario-text:', response);
-
-      popup.classList.add('active');
-      console.log('🚀 [Scenario Popup] Popup opened (slide-in from right).');
-
-      closeButton.onclick = () => {
-        popup.classList.remove('active');
-        console.log('🚪 [Scenario Popup] Popup closed (slide-out to right).');
-      };
-
-      copyButton.onclick = () => {
-        navigator.clipboard.writeText(response)
-          .then(() => {
-            console.log('✅ [Scenario Popup] Text copied to clipboard.');
-            alert('✅ Text has been copied!');
-          })
-          .catch(err => {
-            console.error('❌ [Scenario Popup] Error copying text:', err);
-          });
-      };
-    },
-
-    /** 🛠️ 팝업 숨기기 */
-    hide() {
-      const popup = document.getElementById('scenario-popup');
-      popup.classList.remove('active');
-      console.log('🚪 [Scenario Popup] Popup manually hidden.');
-    }
-  };
-
   const openAIPhase3 = {
     /** 🔄 Phase3: OpenAI API 호출 */
     ask(prompt) {
@@ -1148,7 +1103,15 @@ document.addEventListener("DOMContentLoaded", function () {
       socket.on("scenario response", (data) => {
         if (data.response) {
           console.log("✅ Scenario response:", data.response);
-          this.addScenarioToPopup(data.response); // ✅ 응답을 팝업 창에 표시
+          
+          // ✅ 팝업 활성화
+          const popup = document.getElementById("scenario-popup");
+          popup.classList.add("active"); // 슬라이딩 효과 적용
+    
+          // ✅ 내용 추가
+          this.addScenarioToPopup(data.response);
+    
+          // ✅ 로딩 스피너 숨기기
           hideLoadingSpinner();
         } else if (data.error) {
           console.error("❌ Frontend error during scenario prompt:", data.error);
@@ -1160,17 +1123,14 @@ document.addEventListener("DOMContentLoaded", function () {
     /** ✅ Phase3: 팝업 창에 응답 표시 */
     addScenarioToPopup(response) {
       const popup = document.getElementById('scenario-popup');
-      const scenarioText = document.getElementById('scenario-text');
       const closeButton = document.getElementById('close-popup-button');
       const copyButton = document.getElementById('copy-popup-button');
 
-      if (!popup || !scenarioText || !closeButton || !copyButton) {
+      if (!popup || !closeButton || !copyButton) {
         console.error('❌ [Popup] Popup elements not found. Check your HTML structure.');
         return;
       }
 
-      // ✅ 텍스트 영역에 응답 추가
-      scenarioText.innerText = response;
       console.log('✅ [Popup] Response added to scenario-text:', response);
 
       // ✅ 팝업 표시 (슬라이드 인)
@@ -1212,6 +1172,10 @@ document.addEventListener("DOMContentLoaded", function () {
       let step1Text = sentences.slice(0, stepSize).join('. ') + '.';
       let step2Text = sentences.slice(stepSize, stepSize * 2).join('. ') + '.';
       let step3Text = sentences.slice(stepSize * 2).join('. ') + '.';
+
+      document.getElementById('scenario-text-1').innerText = step1Text;
+      document.getElementById('scenario-text-2').innerText = step2Text;
+      document.getElementById('scenario-text-3').innerText = step3Text;
 
       const jsonObject = {
         step1Text,
@@ -1330,6 +1294,11 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ Save button clicked. Starting OpenAI Phase3...");
     await openAIPhase3.handleSaveAndPrompt();
     await openAIPhase3.handleImageResponse();
+  });
+
+  document.getElementById("close-popup-button").addEventListener("click", () => {
+    const popup = document.getElementById("scenario-popup");
+    popup.classList.remove("active"); // 팝업 숨기기
   });
 
   // Phase3 초기화
