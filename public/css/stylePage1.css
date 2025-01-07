@@ -222,7 +222,7 @@ canvas {
   border: 1px solid #ffffff;
 }
 
-#promptTextInput {
+/* #promptTextInput {
   position: fixed;
   left: 50%;
   bottom: -100%;
@@ -238,15 +238,37 @@ canvas {
   display: none;
   transition: bottom 0.5s ease-in-out;
   box-sizing: border-box;
+} */
+
+/* 🌟 슬라이딩 패널 */
+#promptTextInput {
+  position: fixed;
+  top: 0;
+  left: -400px; /* 초기에는 화면 밖으로 숨김 */
+  width: 400px;
+  height: 100%;
+  background-color: #2b2b2b;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  transition: left 0.4s ease-in-out; /* 부드러운 슬라이딩 효과 */
+  z-index: 10002;
+  display: flex;
+  flex-direction: column; /* 세로 정렬 */
+}
+
+/* 🌟 활성화된 슬라이딩 패널 */
+#promptTextInput.active {
+  left: 0;
 }
 
 #text-box-container {
+  flex: 1; /* 남은 공간을 모두 차지 */
   display: flex;
-  gap: 10px;
-  /* 텍스트박스 사이 간격 */
-  width: 100%;
-  height: 70%;
-  /* 텍스트박스들이 차지할 높이 */
+  flex-direction: column; /* 요소를 세로로 정렬 */
+  gap: 10px; /* 요소 간 간격 */
+  padding: 20px;
+  overflow-y: auto;
+  box-sizing: border-box; 
 }
 
 #promptTextInput-field-btn {
@@ -256,7 +278,7 @@ canvas {
   flex-direction: column;
 }
 
-#promptTextInput-field,
+/* #promptTextInput-field,
 #response-box {
   flex: 1;
   padding: 10px;
@@ -269,22 +291,47 @@ canvas {
   box-sizing: border-box;
   white-space: normal;
   overflow-wrap: break-word;
+} */
+
+/* 🌟 텍스트 에어리어 스타일 */
+#promptTextInput-field{
+  width: 100%;
+  height: 50%;
+  padding: 10px;
+  border: 1px solid #5e5e5e;
+  background-color: #3e3e3e;
+  color: #ffffff;
+  border-radius: 4px;
+  resize: none;
+  font-size: 14px;
+  box-sizing: border-box; /* 패딩 포함 크기 계산 */
+  margin-bottom: 8px;
 }
 
-/* promptTextInput-field의 스타일 */
-#promptTextInput-field {
+#response-box{
+  width: 100%;
+  height: 50%;
+  padding: 10px;
+  border: 1px solid #5e5e5e;
+  background-color: #3e3e3e;
+  color: #ffffff;
+  border-radius: 4px;
+  resize: none;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-top: 8px;
+}
+
+/* #promptTextInput-field {
   background-color: #1e1e1e;
   color: #f1f1f1;
   flex: 1;
-  /* 텍스트박스가 남은 공간을 차지하도록 설정 */
 }
-
-/* response-box는 읽기 전용 */
 #response-box {
   background-color: #f1f1f1;
   color: #333;
   flex: 1;
-}
+}  */
 
 /* 아이콘 스타일 */
 #toggle-arrow i {
@@ -297,8 +344,28 @@ canvas {
   bottom: 0;
 }
 
-/* 화살표 버튼 스타일 */
 #toggle-arrow {
+  all: unset;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #f1f1f1;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#toggle-arrow:hover {
+  background: #2e2e2e;
+}
+
+/* 화살표 버튼 스타일 */
+/* #toggle-arrow {
   position: absolute;
   top: -30px;
   left: 95%;
@@ -311,7 +378,7 @@ canvas {
   cursor: pointer;
   border-radius: 20%;
   z-index: 10001;
-}
+} */
 
 #loading-spinner-container {
   position: fixed;
@@ -392,6 +459,7 @@ canvas {
   gap: 20px;
   text-align: center;
 }
+
 
 /* 이미지 영역 */
 #scenario-popup-images {
@@ -634,4 +702,47 @@ canvas {
 .floating-button:hover::before {
   opacity: 1;
   visibility: visible;
+}
+
+
+/* 🌟 개별 버튼 스타일 */
+.promptTextInput-send {
+  all: unset; /* 기본 버튼 스타일 초기화 */
+  position: absolute; /* 패널 내 절대 위치 */
+  bottom: 20px; /* 하단 여백 */
+  right: 20px; /* 오른쪽 여백 */
+  width: 50px;
+  height: 50px;
+  background-color: #464646;
+  color: #f1f1f1;
+  border-radius: 50%; /* 원형 버튼 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10003; /* 다른 요소보다 위에 표시 */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* 🌟 아이콘 스타일 */
+.promptTextInput-send i {
+  font-size: 20px;
+  transition: color 0.3s ease;
+}
+
+/* 🌟 호버 효과 */
+#promptTextInput-send:hover {
+  background-color: #2e2e2e;
+  transform: scale(1.1); /* 버튼 확대 */
+}
+
+#promptTextInput-send:hover i {
+  color: #39ff14; /* 네온 그린 */
+}
+
+/* 🌟 버튼 포커스 효과 */
+.floating-button:focus {
+  outline: none;
+  box-shadow: 0 0 10px #39ff14;
 }
