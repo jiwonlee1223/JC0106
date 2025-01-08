@@ -455,7 +455,10 @@ canvas {
   flex-direction: column;
   height: 100%;
   padding: 20px;
+  background-color: #2b2b2b;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
+  transition: left 0.4s ease-in-out; /* 부드러운 슬라이딩 효과 */
 }
 
 /* 🌟 팝업 오버레이 */
@@ -604,14 +607,16 @@ canvas {
 .scenario-image-block p {
   font-size: 14px;
   font-weight: bold;
-  color: #555;
+  color: #f0f0f0;
 }
 
 #scenario-text-1,
 #scenario-text-2,
-#scenario-text-3 {
+#scenario-text-3,
+#scenario-text-4,
+#scenario-text-5 {
   font-size: 0.9em;
-  color: #555;
+  color: #f0f0f0;
   text-align: center;
   margin-top: 5px;
 }

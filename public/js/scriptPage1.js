@@ -542,6 +542,7 @@ function createUserDescr(color, id, userName = "User") {
   newDescr.style.marginBottom = "10px";
 
   const nodeName = document.createElement("span");
+  nodeName.id = `user-info-${id}`; 
   nodeName.textContent = `${userName}`;
   nodeName.style.cursor = "pointer";
   nodeName.style.display = "block";
@@ -610,6 +611,7 @@ function createUserDescr(color, id, userName = "User") {
   console.log(
     `Added user info - Name: ${userName} [${id}], Color: ${color}`
   );
+  return { id: nodeName.id, name: userName };
 }
 
 // 노드 추가 생성 모드 종료 함수
@@ -1011,7 +1013,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // function addDoubleClickEditFeature(element) {
   //   element.addEventListener("dblclick", function () {
   //     const input = document.createElement("input");
   //     input.type = "text";
@@ -1097,22 +1098,21 @@ document.addEventListener("DOMContentLoaded", function () {
         return null;
       }
     },
-
-    /** ✅ Phase3: OpenAI 응답 처리 */
+    
     init() {
-      socket.on("scenario response", (data) => {
+      socket.on("scenario response", async (data) => {
         if (data.response) {
           console.log("✅ Scenario response:", data.response);
-          
+
           // ✅ 팝업 활성화
           const popup = document.getElementById("scenario-popup");
           popup.classList.add("active"); // 슬라이딩 효과 적용
-    
+
           // ✅ 내용 추가
           this.addScenarioToPopup(data.response);
-    
-          // ✅ 로딩 스피너 숨기기
-          hideLoadingSpinner();
+
+          // ✅ 이미지 생성 중 로딩 스피너 유지
+          showLoadingSpinner("이미지 생성 중.. ");
         } else if (data.error) {
           console.error("❌ Frontend error during scenario prompt:", data.error);
           hideLoadingSpinner();
@@ -1165,22 +1165,28 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log('📦 Converting response to JSON...');
 
       const sentences = response.split('.').filter(sentence => sentence.trim() !== '');
-      const stepCount = 3; // ✅ 단계 수를 3개로 설정
+      const stepCount = 5; // ✅ 단계 수를 5개로 설정
       const stepSize = Math.ceil(sentences.length / stepCount);
 
-      // ✅ 3단계로 나누기
+      // ✅ 5단계로 나누기
       let step1Text = sentences.slice(0, stepSize).join('. ') + '.';
       let step2Text = sentences.slice(stepSize, stepSize * 2).join('. ') + '.';
-      let step3Text = sentences.slice(stepSize * 2).join('. ') + '.';
+      let step3Text = sentences.slice(stepSize * 2, stepSize * 3).join('. ') + '.';
+      let step4Text = sentences.slice(stepSize * 3, stepSize * 4).join('. ') + '.';
+      let step5Text = sentences.slice(stepSize * 4).join('. ') + '.';
 
       document.getElementById('scenario-text-1').innerText = step1Text;
       document.getElementById('scenario-text-2').innerText = step2Text;
       document.getElementById('scenario-text-3').innerText = step3Text;
+      document.getElementById('scenario-text-4').innerText = step4Text;
+      document.getElementById('scenario-text-5').innerText = step5Text;
 
       const jsonObject = {
         step1Text,
         step2Text,
-        step3Text
+        step3Text,
+        step4Text,
+        step5Text
       };
 
       console.log('✅ JSON Conversion Complete:', jsonObject);
@@ -1220,22 +1226,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     },
 
-    /** ✅ Progress Bar 업데이트 */
-    updateProgressBar(progress) {
-      const progressBar = document.getElementById('progress-bar');
-      if (progressBar) {
-        progressBar.style.width = `${progress}%`;
-      } else {
-        console.error('❌ Progress bar element not found.');
-      }
-    },
-
     handleImageResponse() {
       socket.on('image response', ({ imageUrls, error }) => {
         console.log('📥 [Client] Received image response from server:', { imageUrls, error });
 
         const popup = document.getElementById('scenario-popup');
-        const progressContainer = document.getElementById('progress-container');
 
         if (!popup) {
           console.error('❌ Popup element not found.');
@@ -1249,11 +1244,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         console.log('✅ Received Image URLs:', imageUrls);
-
-        if (progressContainer) {
-          progressContainer.style.display = 'block';
-          this.updateProgressBar(0);
-        }
 
         imageUrls.forEach(({ step, imageUrl }, index) => {
           setTimeout(() => {
@@ -1271,15 +1261,10 @@ document.addEventListener("DOMContentLoaded", function () {
               console.warn(`⚠️ Missing Image or Description element for Step ${step}`);
             }
 
-            const progress = ((index + 1) / imageUrls.length) * 100;
-            this.updateProgressBar(progress);
-
             if (index === imageUrls.length - 1) {
-              setTimeout(() => {
-                if (progressContainer) {
-                  progressContainer.style.display = 'none';
-                }
-              }, 500);
+              // 로딩 스피너 숨기기
+              hideLoadingSpinner();
+              console.log('✅ All images generated. Hiding spinner.');
             }
           }, index * 1500);
         });
@@ -1460,8 +1445,18 @@ window.addEventListener("resize", syncWidth);
 
 // ✅ JSON 저장 함수
 function saveToJSON() {
+  const userNames = [];
+  const userElements = document.querySelectorAll('[id^="user-info-"]');
+
+  // 각 요소에서 userName을 가져와 배열에 저장
+  userElements.forEach(element => {
+    const userName = element.textContent.trim();
+    userNames.push(userName);
+  });
+
   const data = {
     title: titleInput.value.trim(),
+    User: userNames,
     nodes: nodes.map(node => ({
       id: node.id,
       subid: node.subid,
@@ -1491,8 +1486,18 @@ function saveToJSON() {
 }
 
 async function updateJSONOnServer() {
+  const userNames = [];
+  const userElements = document.querySelectorAll('[id^="user-info-"]');
+
+  // 각 요소에서 userName을 가져와 배열에 저장
+  userElements.forEach(element => {
+    const userName = element.textContent.trim();
+    userNames.push(userName);
+  });
+
   const data = {
     title: titleInput.value.trim(),
+    User: userNames,
     nodes: nodes.map(node => ({
       id: node.id,
       subid: node.subid,

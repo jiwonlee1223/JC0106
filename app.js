@@ -12,7 +12,7 @@ const server = http.createServer(app);
 const io = new SocketIOServer(server);
 
 const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 // 서버 포트
@@ -87,9 +87,8 @@ io.on("connection", (socket) => {
     console.log('Client sent prompt:', prompt);
     try {
       const firstInputText =
-        "사용자 시나리오: " + prompt +
-        "]\n" +
-        ": 너가 유능한 서비스디자이너가 되었다고 가정하고, 이 시나리오를 개선하여 사용자 경험이 더욱 풍부해질 수 있도록 창의적인 아이디어를 추가해줘. vr 기기와 같은 내용은 현실적이지 않아서 넣지 마.";
+        "너가 유능한 서비스디자이너가 되었다고 가정하고, 이 시나리오를 개선하여 사용자 경험이 더욱 풍부해질 수 있도록 창의적인 아이디어를 추가해줘. 현실적인 아이디어로 풍부한 사용자 경험을 창출할 수 있도록 해줘. 주어진 시나리오에 언급된 사용자의 이름, 장소의 특징 등의 묘사를 생략하지 마."
+        + "사용자 시나리오: " + prompt;
 
       // OpenAI GPT-4 모델 호출
       const completion = await openai.chat.completions.create({
@@ -115,13 +114,13 @@ io.on("connection", (socket) => {
   socket.on("secondPrompting", async () => {
 
     const secondInputText =
-      "Main Artifact: 서비스의 physical artifact의 일종이며 제품, 공간, 장소 등을 포함한다. 또한, 사용자가 경험하는 무형의 인공물을 지칭하는 디자인 요소 즉 무형의 소프트웨어, 디지털 컨텐츠 등도 포함한다. " +
-      "Sub Artifact: Main Artifact의 하위 항목으로, 보다 상세한 단계의 Artifact이다." +
+      "Main Artifact: 서비스의 physical artifact의 서비스가 이루어지는 장소이다." +
+      "Sub Artifact: Main Artifact의 하위 항목으로, 해당 장소에서 사용자가 접하는 터치포인트를 일컫는다." +
       "]\n" +
       "사용자 시나리오: " + responseText +
       "]\n" +
       "이 시나리오에서 서술되고 있는 Main Artifact와 Sub Artifact, User를 추출하여 출력하시오. 출력되는 텍스트는 다음 [format]을 *반드시* 따를 것. [format] 이외의 텍스트를 출력하지 말 것.\n" +
-      "당신의 응답을 JSON 형식으로 제공해주세요.\n" +
+      "당신의 응답을 JSON 형식으로 제공해주세요. 단. mainArtifact의 개수는 3개를 넘지 말 것.\n" +
       "출력 형식:\n" +
       `{
     "artifacts": [
@@ -164,9 +163,9 @@ io.on("connection", (socket) => {
 
     try {
       // ✅ 프롬프트 텍스트 구성
-      const scenarioInputText = prompt +
-        "]\n" +
-        ": 너는 유능한 서비스 디자이너야. 이 json 파일을 참고하여 Key Interactions, Service Outcome & Value를 포함한 3문장 분량의 서비스 시나리오를 작성해줘.";
+      const scenarioInputText = "json 파일" + prompt
+        + "]\n"
+        + ": 너는 유능한 서비스 디자이너야. 이 json 파일을 참고하여 Key Interactions, Service Outcome & Value를 포함한 **무조건 5문장**의 서비스 시나리오를 작성해줘.";
 
       // ✅ OpenAI API 호출
       const completion = await openai.chat.completions.create({
@@ -195,10 +194,10 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("generateImage", async ({ step1Text, step2Text, step3Text }) => {
-    console.log('📤 Client sent image prompts:', { step1Text, step2Text, step3Text });
+  socket.on("generateImage", async ({ step1Text, step2Text, step3Text, step4Text, step5Text }) => {
+    console.log('📤 Client sent image prompts:', { step1Text, step2Text, step3Text, step4Text, step5Text });
 
-    if (!step1Text || !step2Text || !step3Text) {
+    if (!step1Text || !step2Text || !step3Text || !step4Text || !step5Text) {
       console.error('❌ Missing step data from client');
       return socket.emit('image response', {
         error: 'Missing step data from client.'
@@ -207,15 +206,24 @@ io.on("connection", (socket) => {
 
     try {
       // ✅ 프롬프트 배열 준비
-      const steps = [step1Text, step2Text, step3Text];
+      const steps = [step1Text, step2Text, step3Text, step4Text, step5Text];
       const imageUrls = [];
-
+  
+      // 스타일을 명확하게 설정한 기본 프롬프트
+      const baseStyleDescription = "The illustration should be minimalist, with a white background, no excessive details or complex elements, and a soft, gentle appearance. 이 시나리오가 영화의 한 장면이라고 생각하고, 그 장면 한 컷을 포착한다고 생각해봐. "
+        + "The art style is reminiscent of 2D Disney animation, with smooth, clean lines and a soft, whimsical feel. "
+        + "The illustration is lighthearted and warm, with a minimalist design that highlights the simplicity of the scene. ";
+  
       for (let i = 0; i < steps.length; i++) {
-        const imageInputText = "넌 유능한 서비스 디자이너야. 제공된 시나리오에 해당하는 사진을 출력해줘. 텍스트에 해당하는 하나의 장면을 포착한다는 느낌으로 출력해줘. User, Interactions & Touchpoints, Context & Environment가 잘 녹아들어야 해. A photorealistic image, ultra-detailed."
-          + "\n 시나리오: " + steps[i];
-
+        const sceneDescription = i === 0
+          ? `Scene 1: Introduce the scenario. ${steps[i]}`
+          : `Scene ${i + 1}: Continuation of the previous scene, with ${steps[i]}`;
+  
+        const imageInputText = baseStyleDescription
+          + "\n " + sceneDescription;
+  
         console.log(`📤 Generating image for Step ${i + 1}:`, imageInputText);
-
+  
         // ✅ OpenAI DALL-E API 호출
         const response = await openai.images.generate({
           model: "dall-e-3",
@@ -223,23 +231,23 @@ io.on("connection", (socket) => {
           n: 1,
           size: "1024x1024",
         });
-
+  
         // ✅ 이미지 URL 추출
         const imageUrl = response.data[0]?.url;
         if (!imageUrl) {
           throw new Error(`Failed to retrieve image URL for Step ${i + 1}`);
         }
-
+  
         console.log(`✅ Image URL for Step ${i + 1}:`, imageUrl);
-
+  
         imageUrls.push({ step: i + 1, imageUrl });
       }
-
+  
       // ✅ 클라이언트로 이미지 URL 목록 전송
       socket.emit("image response", { imageUrls });
     } catch (error) {
       console.error("❌ Error during image generation:", error);
-
+  
       // ✅ 에러 핸들링
       socket.emit("image response", {
         error: "An error occurred while generating the images.",
