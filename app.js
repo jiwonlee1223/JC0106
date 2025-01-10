@@ -86,8 +86,15 @@ io.on("connection", (socket) => {
   socket.on("firstPrompting", async ({ prompt }) => {
     console.log('Client sent prompt:', prompt);
     try {
+      // 사용자 추출, 터치포인트 추출
       const firstInputText =
-        "너가 유능한 서비스디자이너가 되었다고 가정하고, 이 시나리오를 개선하여 사용자 경험이 더욱 풍부해질 수 있도록 창의적인 아이디어를 추가해줘. 현실적인 아이디어로 풍부한 사용자 경험을 창출할 수 있도록 해줘. 주어진 시나리오에 언급된 사용자의 이름, 장소의 특징 등의 묘사를 생략하지 마."
+        "Contexts: 서비스가 이루어지는 장소이다."
+        + "Artifacts: Contexts의 하위 항목으로, 해당 Context에서 사용자가 접하는 터치포인트이다."
+        + "터치포인트는 하드웨어를 포함하는 제품이 될 수도 있고, 소프트웨어를 포함하는 앱이 될 수도 있다."
+        + "이 시나리오에서 서술되고 있는 Contexts와 Artifacts, Users를 추출하여 리스트 형식으로 정확히 제공하시오."
+        + "시나리오에서 각각의 사용자가 경험하게 되는 단계를 시간 순으로 나눠서 리스트하시오."
+        + `### 유진의 사용자 경험 단계:
+        ### 호정의 사용자 경험 단계:` 
         + "사용자 시나리오: " + prompt;
 
       // OpenAI GPT-4 모델 호출
@@ -114,13 +121,14 @@ io.on("connection", (socket) => {
   socket.on("secondPrompting", async ({ modifiedText }) => {
 
     const secondInputText = `
-    Main Artifact: 서비스의 physical artifact의 서비스가 이루어지는 장소이다.
-    Sub Artifact: Main Artifact의 하위 항목으로, 해당 장소에서 사용자가 접하는 터치포인트를 일컫는다.
+    mainArtifact: 서비스가 이루어지는 장소이다.
+    subArtifacts: Contexts의 하위 항목으로, 해당 Context에서 사용자가 접하는 터치포인트이다.
+    터치포인트는 하드웨어를 포함하는 제품이 될 수도 있고, 소프트웨어를 포함하는 앱이 될 수도 있다.
+    이 시나리오에서 서술되고 있는 mainArtifacts와 subArtifacts, Users를 추출하여 json 형식으로 정확히 제공하시오.
+    응답 형식은 json 파일 형식으로, 아래와 같아야 합니다 . 응답에서 백틱은 포함되지 않도록 합니다.
     
     사용자 시나리오: ${modifiedText}
-    
-    이 시나리오에서 서술되고 있는 Main Artifact와 Sub Artifact, User를 추출하여 JSON 형식으로 정확히 제공하시오.
-    응답 형식은 json 파일 형식으로, 아래와 같아야 합니다:
+    :
   
     {
       "artifacts": [
@@ -159,6 +167,43 @@ io.on("connection", (socket) => {
     }
   });
 
+  // 서버 코드: RevisePrompting 이벤트 처리
+socket.on("RevisePrompting", async ({ prompt }) => {
+  const RevisedInputText = "json:" + prompt
+  + `      이 json 파일은 사용자 시나리오의 context와 Artifact, user의 정보를 담고 있다.
+      mainArtifact는 context, subArtifacts는 Artifact라고 가정하고,
+
+      Contexts: 서비스가 이루어지는 장소이다.
+      Artifacts: Contexts의 하위 항목으로, 해당 Context에서 사용자가 접하는 터치포인트이다. 터치포인트는 하드웨어를 포함하는 제품이 될 수도 있고, 소프트웨어를 포함하는 앱이 될 수도 있다.
+       사용자 경험 단계에서는 시나리오에서 각각의 사용자들이 경험하게 되는 단계를 시간 순으로 나눠서 리스트하시오.
+
+      이 json 파일에서 서술되고 있는 context와 Artifact, Users를 추출하여 다음과 같은 리스트 형식으로 제공하시오.
+      사용자 중, 호정은 유진이 차량을 픽업하는 동안 공항에서 기다리는 내용의 사용자 경험 단계를 작성할 것.
+      ### Contexts:
+      ### Artifacts:
+      ### Users:
+      ### 유진의 사용자 경험 단계:
+      ### 호정의 사용자 경험 단계: `;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o", // 모델 이름
+      messages: [{ role: "system", content: RevisedInputText }],
+    });
+
+    const RevisedResponseText = completion.choices[0].message.content; // OpenAI 응답
+    console.log("✅ OpenAI revised response:", RevisedResponseText);
+
+    // 클라이언트로 응답 전송
+    socket.emit("final revise response", { response: RevisedResponseText });
+  } catch (error) {
+    console.error("❌ Error during RevisePrompting:", error);
+    socket.emit("final revise response", { error: "An error occurred while contacting the OpenAI API." });
+  }
+});
+
+  
+
   socket.on("scenarioPrompting", async ({ prompt }) => {
     console.log('📤 Client sent prompt:', prompt);
 
@@ -166,7 +211,7 @@ io.on("connection", (socket) => {
       // ✅ 프롬프트 텍스트 구성
       const scenarioInputText = "json 파일" + prompt
         + "]\n"
-        + ": 너는 유능한 서비스 디자이너야. 이 json 파일을 참고하여 Key Interactions, Service Outcome & Value를 포함한 **무조건 5문장**의 서비스 시나리오를 작성해줘.";
+        + ": 이 json 파일을 참고하여 Key Interactions, Service Outcome & Value를 포함한 ** 5문장**의 서비스 시나리오를 작성해줘.";
 
       // ✅ OpenAI API 호출
       const completion = await openai.chat.completions.create({
@@ -213,7 +258,9 @@ io.on("connection", (socket) => {
       // 스타일을 명확하게 설정한 기본 프롬프트
       const baseStyleDescription = "The illustration should be minimalist, with a white background, no excessive details or complex elements, and a soft, gentle appearance. 이 시나리오가 영화의 한 장면이라고 생각하고, 그 장면 한 컷을 포착한다고 생각해봐. "
         + "The art style is reminiscent of 2D Disney animation, with smooth, clean lines and a soft, whimsical feel. "
-        + "The illustration is lighthearted and warm, with a minimalist design that highlights the simplicity of the scene. ";
+        + "The illustration is lighthearted and warm, with a minimalist design that highlights the simplicity of the scene. "
+        + "이미지 안에 context, artifact, user 정보를 모두 포함할 것."
+        + "Contexts: 서비스가 이루어지는 장소이다. / Artifacts: Contexts의 하위 항목으로, 해당 Context에서 사용자가 접하는 터치포인트이다. 터치포인트는 하드웨어를 포함하는 제품이 될 수도 있고, 소프트웨어를 포함하는 앱이 될 수도 있다.";
   
       for (let i = 0; i < steps.length; i++) {
         const sceneDescription = i === 0

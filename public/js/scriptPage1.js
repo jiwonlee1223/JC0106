@@ -1089,6 +1089,94 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // x-axis 섹션 나누기 로직
 
+  const openAIPhase2_1 = {
+    /** 🔄 Phase2.1: OpenAI API 호출 (RevisePrompting) */
+    ask(prompt) {
+      console.log("🚀 [Phase2.1] Sending RevisePrompting to server...");
+      socket.emit("RevisePrompting", { prompt });
+      showLoadingSpinner("시나리오 수정 중...");
+    },
+  
+    /** 📝 Phase2.1: JSON 파일 가져오기 */
+    async fetchScenarioRevisePrompt() {
+      try {
+        // scenarioRevisePrompt.json 파일을 가져오기
+        const response = await fetch('/scenarioMakingPrompt.json');
+        if (!response.ok) throw new Error('Failed to load scenarioMakingPrompt.json');
+  
+        const jsonData = await response.json();
+        console.log("✅ Loaded scenarioRevisePrompt.json:", jsonData);
+        return JSON.stringify(jsonData);
+      } catch (error) {
+        console.error("❌ Error loading scenarioMakingPrompt.json:", error);
+        hideLoadingSpinner();
+        return null;
+      }
+    },
+
+    /** Phase2.1 이벤트 리스너 (promptRevise 버튼 클릭 시) */
+    init() {
+      socket.on("final revise response", (data) => {
+        if (data.response) {
+          console.log("✅ [Phase2.1] OpenAI revise response:", data.response);
+          this.addResponseToTextBox(data.response); // response-box에 응답 추가
+          hideLoadingSpinner();
+        } else if (data.error) {
+          console.error("❌ [Phase2.1] Error during RevisePrompting:", data.error);
+          hideLoadingSpinner();
+        }
+      });
+    },
+
+    async handleSaveAndPromptRevise() {
+      const revisePrompt = await this.fetchScenarioRevisePrompt();
+      if (!revisePrompt) {
+        alert("scenarioRevisePrompt.json 파일을 불러오는 데 실패했습니다.");
+        return;
+      }
+
+      // OpenAI API 호출
+      await this.ask(revisePrompt);
+
+      // JSON 업데이트
+      try {
+        const response = await fetch('/update-json', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: revisePrompt
+        });
+
+        if (response.ok) {
+          console.log("✅ JSON 파일이 성공적으로 저장되었습니다.");
+        } else {
+          console.error("❌ JSON 파일 저장 실패:", response.statusText);
+        }
+      } catch (error) {
+        console.error("❌ JSON 저장 오류:", error);
+      }
+    },
+  
+    /** 🔄 Phase2.1: 응답을 response-box에 표시 */
+    addResponseToTextBox(response) {
+      const responseBox = document.getElementById("response-box");
+      if (responseBox) {
+        responseBox.value = response; // 응답을 response-box에 표시
+        console.log("✅ [Phase2.1] Response added to response-box:", response);
+      } else {
+        console.error("❌ [Phase2.1] response-box not found!");
+      }
+    }
+  };
+
+  document.getElementById("promptRevise").addEventListener("click", async function () {
+    console.log("✅ Save button clicked. Starting OpenAI Phase2.1...");
+    await openAIPhase2_1.handleSaveAndPromptRevise();
+  });
+  
+  // Phase2.1 초기화
+  openAIPhase2_1.init();
+  
+
   const openAIPhase3 = {
     /** 🔄 Phase3: OpenAI API 호출 */
     ask(prompt) {
@@ -1288,6 +1376,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
+
   // Phase3 이벤트 리스너 🖱️save-json-button 클릭 이벤트
   document.getElementById("save-json-button").addEventListener("click", async function () {
     console.log("✅ Save button clicked. Starting OpenAI Phase3...");
@@ -1326,9 +1415,8 @@ document.addEventListener("DOMContentLoaded", function () {
     xAxisContainer.scrollLeft = canvasContainer.scrollLeft;
   });
 
-  // 세 섹션 각각에 “Before,” “During,” “After” 이름 지정
   function setupTimeDivisions() {
-    const timeDivisions = ["Before", "During", "After"];
+    const timeDivisions = ["1", "2", "3"];
     const sections = document.querySelectorAll(".time-dividing-section");
 
     sections.forEach((section, index) => {
@@ -1552,6 +1640,7 @@ async function updateJSONOnServer() {
 }
 
 document.getElementById('save-json-button').addEventListener('click', updateJSONOnServer);
+document.getElementById('promptRevise').addEventListener('click', updateJSONOnServer);
 
 const saveJsonButton = document.getElementById('save-json-button');
 let lastScrollY = window.scrollY;
