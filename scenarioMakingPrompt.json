@@ -1,6 +1,97 @@
 {
   "title": "",
-  "User": [],
-  "nodes": [],
-  "rows": []
+  "User": [
+    "유진",
+    "호정",
+    "유경"
+  ],
+  "nodes": [
+    {
+      "id": 1,
+      "subid": 1,
+      "x": 25,
+      "y": 25,
+      "color": "#FF6FFF",
+      "description": "",
+      "hasText": false,
+      "isDiamond": true
+    },
+    {
+      "id": 2,
+      "subid": 1,
+      "x": 25,
+      "y": 75,
+      "color": "#39FF14",
+      "description": "",
+      "hasText": false,
+      "isDiamond": true
+    },
+    {
+      "id": 3,
+      "subid": 1,
+      "x": 25,
+      "y": 125,
+      "color": "#FF073A",
+      "description": "",
+      "hasText": false,
+      "isDiamond": true
+    }
+  ],
+  "rows": [
+    {
+      "id": "artifact-row-1",
+      "type": "Main Artifact",
+      "description": "렌트카 예약 플랫폼"
+    },
+    {
+      "id": "artifact-row-2",
+      "type": "Sub Artifact",
+      "description": "맞춤형 여행 플래너"
+    },
+    {
+      "id": "artifact-row-3",
+      "type": "Sub Artifact",
+      "description": "자동 반납 프로세스"
+    },
+    {
+      "id": "artifact-row-4",
+      "type": "Sub Artifact",
+      "description": "여행 후 평가 및 리워드"
+    },
+    {
+      "id": "artifact-row-5",
+      "type": "Main Artifact",
+      "description": "차량"
+    },
+    {
+      "id": "artifact-row-6",
+      "type": "Sub Artifact",
+      "description": "가상 차량 가이드"
+    },
+    {
+      "id": "artifact-row-7",
+      "type": "Sub Artifact",
+      "description": "자동차 내부 맞춤 설정"
+    },
+    {
+      "id": "artifact-row-8",
+      "type": "Sub Artifact",
+      "description": "포토 로그 기능"
+    },
+    {
+      "id": "artifact-row-9",
+      "type": "Main Artifact",
+      "description": "실시간 로컬 매니저"
+    },
+    {
+      "id": "artifact-row-10",
+      "type": "Sub Artifact",
+      "description": "GPS 연동"
+    },
+    {
+      "id": "artifact-row-11",
+      "type": "Sub Artifact",
+      "description": "근처 맛집 및 리뷰 안내"
+    }
+  ]
 }

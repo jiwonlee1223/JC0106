@@ -16,7 +16,7 @@ const openai = new OpenAI({
 });
 
 // 서버 포트
-const port = 3000;
+const port = 3001;
 
 // __dirname 설정
 const __filename = fileURLToPath(import.meta.url);
@@ -111,30 +111,31 @@ io.on("connection", (socket) => {
   });
 
   // 두 번째 프롬프트 처리 (이전 응답을 입력으로 사용)
-  socket.on("secondPrompting", async () => {
+  socket.on("secondPrompting", async ({ modifiedText }) => {
 
-    const secondInputText =
-      "Main Artifact: 서비스의 physical artifact의 서비스가 이루어지는 장소이다." +
-      "Sub Artifact: Main Artifact의 하위 항목으로, 해당 장소에서 사용자가 접하는 터치포인트를 일컫는다." +
-      "]\n" +
-      "사용자 시나리오: " + responseText +
-      "]\n" +
-      "이 시나리오에서 서술되고 있는 Main Artifact와 Sub Artifact, User를 추출하여 출력하시오. 출력되는 텍스트는 다음 [format]을 *반드시* 따를 것. [format] 이외의 텍스트를 출력하지 말 것.\n" +
-      "당신의 응답을 JSON 형식으로 제공해주세요. 단. mainArtifact의 개수는 3개를 넘지 말 것.\n" +
-      "출력 형식:\n" +
-      `{
-    "artifacts": [
-      {
-        "mainArtifact": "Main Artifact 1",
-        "subArtifacts": ["Sub Artifact 1-1", "Sub Artifact 1-2"]
-      },
-      {
-        "mainArtifact": "Main Artifact 2",
-        "subArtifacts": ["Sub Artifact 2-1", "Sub Artifact 2-2"]
-      }
-    ],
-    "users": ["User 1", "User 2"]
-  }`;
+    const secondInputText = `
+    Main Artifact: 서비스의 physical artifact의 서비스가 이루어지는 장소이다.
+    Sub Artifact: Main Artifact의 하위 항목으로, 해당 장소에서 사용자가 접하는 터치포인트를 일컫는다.
+    
+    사용자 시나리오: ${modifiedText}
+    
+    이 시나리오에서 서술되고 있는 Main Artifact와 Sub Artifact, User를 추출하여 JSON 형식으로 정확히 제공하시오.
+    응답 형식은 json 파일 형식으로, 아래와 같아야 합니다:
+  
+    {
+      "artifacts": [
+        {
+          "mainArtifact": "Main Artifact 1",
+          "subArtifacts": ["Sub Artifact 1-1", "Sub Artifact 1-2"]
+        },
+        {
+          "mainArtifact": "Main Artifact 2",
+          "subArtifacts": ["Sub Artifact 2-1", "Sub Artifact 2-2"]
+        }
+      ],
+      "users": ["User 1", "User 2"]
+    }
+    `;
 
 
     try {

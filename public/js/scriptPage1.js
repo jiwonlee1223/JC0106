@@ -802,7 +802,6 @@ document.addEventListener("DOMContentLoaded", function () {
       socket.on("openai response", (data) => {
         if (data.response) {
           console.log("✅ [Phase1] First OpenAI API response:", data.response);
-
           this.addResponseToTextBox(data.response);
           hideLoadingSpinner();
           console.log("➡️ [Phase1] Ready for Phase2 transition.");
@@ -834,7 +833,6 @@ document.addEventListener("DOMContentLoaded", function () {
     /** 🔄 Phase2: OpenAI API 호출 (secondPrompting) */
     ask() {
       console.log("🚀 [Phase2] Sending secondPrompting to server...");
-      socket.emit("secondPrompting");
       showLoadingSpinner("맵 생성 중 ...");
     },
 
@@ -843,7 +841,14 @@ document.addEventListener("DOMContentLoaded", function () {
       try {
         console.log("🛠️ [Phase2] Parsing artifacts and adding rows:", response);
 
-        const data = JSON.parse(response); // JSON 파싱
+        // 응답에서 백틱 제거 (```) 처리
+    const cleanedResponse = response.replace(/```json|```/g, '').trim();
+    const data = JSON.parse(cleanedResponse);
+
+        if (typeof response === "string" && response.startsWith("I'm sorry")) {
+          console.error("❌ [Phase2] OpenAI 오류 응답:", response);
+          return; // 오류 응답이면 JSON 파싱을 시도하지 않고 종료
+        }
 
         // ✅ Main/Sub Artifact 추가
         if (data.artifacts && Array.isArray(data.artifacts)) {
@@ -908,11 +913,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /** ✅ Phase2 이벤트 리스너 */
   document
-    .getElementById("promptMapInput-close")
-    .addEventListener("click", function () {
-      console.log("🚀 [Phase2] Starting Phase2 process...");
-      openAIPhase2.ask();
-    });
+  .getElementById("promptMapInput-close")
+  .addEventListener("click", function () {
+    // response-box에서 수정된 텍스트 읽기
+    const modifiedText = document.getElementById("response-box").value; // 수정된 텍스트
+    if (modifiedText.trim()) {
+      console.log("🚀 [Phase2] Sending modified text to server:", modifiedText);
+      
+      // 수정된 텍스트를 서버로 전송하여 secondPrompting 실행
+      socket.emit("secondPrompting", { modifiedText });
+      showLoadingSpinner("맵 생성 중 ...");
+    } else {
+      console.warn("⚠️ [Phase2] Empty response. Please enter some text in response-box.");
+    }
+  });
 
   /** ✅ Phase2 초기화 */
   openAIPhase2.init();
